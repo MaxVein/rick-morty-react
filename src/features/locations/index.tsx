@@ -1,10 +1,9 @@
 import React from 'react';
 import TableHandler from '../../common/ui/Table/table';
 
-function Locations(props): JSX.Element {
+function Locations(): JSX.Element {
     return (
         <div>
-            <TableHandler />
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Necessitatibus earum ea,
             aperiam dolor atque est recusandae. Mollitia sint nesciunt incidunt saepe soluta dicta
             cumque inventore quod quis iure necessitatibus commodi reiciendis natus perspiciatis,

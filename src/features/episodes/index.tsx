@@ -1,10 +1,9 @@
 import React from 'react';
 import TableHandler from '../../common/ui/Table/table';
 
-function Episodes(props): JSX.Element {
+function Episodes(): JSX.Element {
     return (
         <div>
-            <TableHandler />
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt eius necessitatibus
             voluptatem quae dicta fugiat commodi earum ullam. Quibusdam earum, modi neque placeat
             qui incidunt dolores veniam nemo ullam, exercitationem in dolore maxime error. Error

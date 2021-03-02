@@ -22,7 +22,7 @@ import {
     fade,
     CssBaseline,
 } from '@material-ui/core';
-import { Menu, Search, Mail, Inbox, ChevronLeft, ChevronRight, People } from '@material-ui/icons';
+import { Menu, Search, ChevronLeft, ChevronRight } from '@material-ui/icons';
 import clsx from 'clsx';
 
 import Characters from './features/Characters';
