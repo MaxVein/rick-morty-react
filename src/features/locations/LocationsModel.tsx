@@ -1,28 +1,17 @@
 import { ColumnsId, EntityInfo } from '../../common/models/EntitiesModel';
 
-export interface CharacterData {
+export interface LocationData {
     id: number;
     name: string;
-    status: string;
-    species: string;
     type: string;
-    gender: string;
-    origin: {
-        name: string;
-        url: string;
-    };
-    location: {
-        name: string;
-        url: string;
-    };
-    image: string;
-    episode: Array<string>;
+    dimension: string;
+    residents: Array<string>;
     url: string;
     created: string;
 }
-export interface CharactersData {
+export interface LocationsData {
     info: EntityInfo;
-    results: Array<CharacterData>;
+    results: Array<LocationData>;
 }
 
 export interface Column {
@@ -36,24 +25,17 @@ export const columns: Column[] = [
     { id: 'id', label: 'ID', minWidth: 100 },
     { id: 'name', label: 'Name', minWidth: 170 },
     {
-        id: 'status',
-        label: 'Status',
+        id: 'type',
+        label: 'Type',
         minWidth: 170,
         align: 'center',
         format: (value: number) => value.toLocaleString('en-US'),
     },
     {
-        id: 'species',
-        label: 'Species',
+        id: 'dimension',
+        label: 'Dimension',
         minWidth: 170,
         align: 'center',
         format: (value: number) => value.toLocaleString('en-US'),
-    },
-    {
-        id: 'gender',
-        label: 'Gender',
-        minWidth: 170,
-        align: 'center',
-        format: (value: number) => value.toFixed(2),
     },
 ];

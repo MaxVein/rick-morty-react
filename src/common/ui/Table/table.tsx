@@ -10,25 +10,42 @@ import {
     TablePagination,
     makeStyles,
 } from '@material-ui/core';
+import { TableProps } from './TableModel';
 
 const useStyles = makeStyles({
     root: {
         width: '100%',
+        overflowX: 'auto',
     },
     container: {
-        maxHeight: 440,
+        maxHeight: 600,
+        overflowX: 'auto',
     },
 });
-function TableHandler({ columns, data, amount }): JSX.Element {
+
+function TableHandler({
+    columns,
+    data,
+    amount,
+    pageCounter,
+    setPageCounter,
+}: TableProps): JSX.Element {
     const classes = useStyles();
 
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [rowsPerPage, setRowsPerPage] = React.useState(20);
 
     const handleChangePage = (event: unknown, newPage: number) => {
+        if (newPage > page) {
+            if (pageCounter === page) {
+                setPageCounter((prevVal) => {
+                    prevVal++;
+                    return prevVal;
+                });
+            }
+        }
         setPage(newPage);
     };
-
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
@@ -37,8 +54,8 @@ function TableHandler({ columns, data, amount }): JSX.Element {
     return (
         <Paper elevation={5} className={classes.root}>
             <TableContainer className={classes.container}>
-                <Table stickyHeader aria-label='sticky table'>
-                    <TableHead>
+                <Table className={classes.root} stickyHeader>
+                    <TableHead className={classes.root}>
                         <TableRow>
                             {columns.map((column) => (
                                 <TableCell
@@ -50,7 +67,7 @@ function TableHandler({ columns, data, amount }): JSX.Element {
                             ))}
                         </TableRow>
                     </TableHead>
-                    <TableBody>
+                    <TableBody className={classes.root}>
                         {data
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                             .map((item) => {
@@ -73,7 +90,7 @@ function TableHandler({ columns, data, amount }): JSX.Element {
                 </Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
+                rowsPerPageOptions={[20, 50, 100]}
                 component='div'
                 count={amount}
                 rowsPerPage={rowsPerPage}

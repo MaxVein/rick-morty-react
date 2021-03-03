@@ -1,32 +1,64 @@
-import React from 'react';
+import { Typography } from '@material-ui/core';
+import { Camera } from '@material-ui/icons';
+import React, { useEffect, useState } from 'react';
+import Loader from '../../common/ui/Loader/loader';
 import TableHandler from '../../common/ui/Table/table';
+import { columns } from '../Episodes/EpisodesModel';
+import { EpisodeData, EpisodesData } from './EpisodesModel';
+import { getEpisodes } from './EpisodesService';
+
+// import styles from './Episodes.module.css';
+import sharedstyles from '../../common/styles/entityHeader.module.css';
 
 function Episodes(): JSX.Element {
+    const [loaded, setLoaded] = useState(false);
+    const [dataSource, setDataSource] = useState([] as Array<EpisodeData>);
+    const [totalAmount, setTotalAmount] = useState(0);
+    const [pageCounter, setPageCounter] = useState(0);
+    const [nextPage, setNextPage] = useState('?page=1');
+
+    useEffect(() => {
+        let finished = false;
+        if (!finished) {
+            getEpisodes(nextPage).then((res) => {
+                setDataSource([...res.results]);
+                setTotalAmount(res.info.count);
+                setNextPage(res.info.next);
+                setLoaded(true);
+            });
+        }
+        return () => {
+            finished = true;
+        };
+    }, []);
+    useEffect(() => {
+        if (pageCounter >= 1) {
+            getEpisodes(nextPage).then((res: EpisodesData) => {
+                setDataSource((prevVal: Array<EpisodeData>) => prevVal.concat([...res.results]));
+                setNextPage(res.info.next);
+            });
+        }
+    }, [pageCounter]);
+
     return (
-        <div>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Deserunt eius necessitatibus
-            voluptatem quae dicta fugiat commodi earum ullam. Quibusdam earum, modi neque placeat
-            qui incidunt dolores veniam nemo ullam, exercitationem in dolore maxime error. Error
-            quasi est amet impedit eos possimus unde maxime eaque voluptate deleniti ipsam laborum,
-            fuga quidem modi quos numquam. In, id vero incidunt doloribus nostrum cum. Aliquam vero
-            eum quibusdam totam at quo labore impedit. Fugit illo unde maxime eius blanditiis
-            officia hic nam possimus, beatae repudiandae perferendis quam commodi totam quis rem
-            harum. Necessitatibus obcaecati architecto at impedit consequatur dolores aliquam
-            tempore omnis totam deserunt harum quidem, ducimus fugit repellendus suscipit in porro
-            commodi assumenda ipsam velit placeat dolore eligendi qui. Ullam ea sequi eaque, vitae
-            odit eveniet consequuntur asperiores blanditiis odio! Repellendus vel error voluptas
-            obcaecati recusandae magni est distinctio reprehenderit, ipsam ab tempora nesciunt
-            nobis. Sequi, magni eaque voluptatum fugiat blanditiis ipsam fugit deserunt cum
-            provident nihil vel iusto placeat nam aut doloribus asperiores ratione? Soluta, dolores
-            perspiciatis! Tempore totam vitae impedit, aspernatur eaque debitis quas autem provident
-            delectus corporis labore hic repellat ex consequatur laboriosam quae blanditiis, maxime
-            et soluta quibusdam libero adipisci? Ipsa provident architecto mollitia explicabo animi
-            quia eum doloremque voluptas tenetur vel sint quae culpa, esse laborum exercitationem
-            voluptate corrupti, incidunt perferendis aliquam fugit placeat delectus? Dicta officia
-            ipsum, illo alias esse a pariatur quas nihil iure provident, ullam quisquam enim!
-            Reprehenderit, nesciunt aliquam quod quibusdam exercitationem, corporis necessitatibus
-            nulla impedit explicabo neque dolore eum reiciendis facere ex tempore.
-        </div>
+        <>
+            {loaded ? (
+                <>
+                    <Typography className={sharedstyles.header} variant='h4' component='h1'>
+                        <Camera /> Characters
+                    </Typography>
+                    <TableHandler
+                        columns={columns}
+                        data={dataSource}
+                        amount={totalAmount}
+                        pageCounter={pageCounter}
+                        setPageCounter={setPageCounter}
+                    />
+                </>
+            ) : (
+                <Loader />
+            )}
+        </>
     );
 }
 

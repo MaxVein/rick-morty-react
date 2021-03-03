@@ -1,36 +1,63 @@
 import React, { useEffect, useState } from 'react';
 
 import { getCharacters } from './CharactersService';
-import { columns } from './CharactersModel';
+import { CharacterData, CharactersData, columns } from './CharactersModel';
 import TableHandler from '../../common/ui/Table/table';
 import { Typography } from '@material-ui/core';
+import { People } from '@material-ui/icons';
+
+// import styles from './Characters.module.css';
+import sharedstyles from '../../common/styles/entityHeader.module.css';
+import Loader from '../../common/ui/Loader/loader';
 
 function Characters(): JSX.Element {
-    const [dataSource, setDataSource] = useState([] as Array<any>);
+    const [loaded, setLoaded] = useState(false);
+    const [dataSource, setDataSource] = useState([] as Array<CharacterData>);
     const [totalAmount, setTotalAmount] = useState(0);
-    const [nextPage, setNextPage] = useState(null);
+    const [pageCounter, setPageCounter] = useState(0);
+    const [nextPage, setNextPage] = useState('?page=1');
+
     useEffect(() => {
-        getCharacters('?page=1').then((res) => {
-            setDataSource([...res.results]);
-            setTotalAmount(res.info.count);
-            setNextPage(res.info.next);
-        });
+        let finished = false;
+        if (!finished) {
+            getCharacters(nextPage).then((res) => {
+                setDataSource([...res.results]);
+                setTotalAmount(res.info.count);
+                setNextPage(res.info.next);
+                setLoaded(true);
+            });
+        }
+        return () => {
+            finished = true;
+        };
     }, []);
+    useEffect(() => {
+        if (pageCounter >= 1) {
+            getCharacters(nextPage).then((res: CharactersData) => {
+                setDataSource((prevVal: Array<CharacterData>) => prevVal.concat([...res.results]));
+                setNextPage(res.info.next);
+            });
+        }
+    }, [pageCounter]);
+
     return (
         <>
-            <Typography variant='h4' component='h1'>
-                Characters
-            </Typography>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloribus laboriosam, eveniet
-            optio assumenda deserunt maxime, minus animi libero esse iure, voluptate recusandae
-            error! Optio omnis eveniet aspernatur rem tenetur! Earum atque totam quos culpa incidunt
-            provident, quibusdam itaque dignissimos, temporibus commodi, distinctio velit autem.
-            Dolorum molestias voluptates illo corporis, facilis minima nulla est obcaecati possimus
-            facere accusantium vel doloremque, dolore eaque eius sapiente reiciendis. Fugit quisquam
-            dolorum in quis itaque nemo quos totam architecto pariatur reiciendis nulla at, et harum
-            incidunt, optio explicabo, dignissimos iste repellat quam odit adipisci suscipit. Sequi,
-            enim rem vero necessitatibus ad illum sit quidem at!
-            <TableHandler columns={columns} data={dataSource} amount={totalAmount} />
+            {loaded ? (
+                <>
+                    <Typography className={sharedstyles.header} variant='h4' component='h1'>
+                        <People /> Characters
+                    </Typography>
+                    <TableHandler
+                        columns={columns}
+                        data={dataSource}
+                        amount={totalAmount}
+                        pageCounter={pageCounter}
+                        setPageCounter={setPageCounter}
+                    />
+                </>
+            ) : (
+                <Loader />
+            )}
         </>
     );
 }
