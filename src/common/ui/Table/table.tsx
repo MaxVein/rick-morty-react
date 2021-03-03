@@ -1,7 +1,5 @@
 import React from 'react';
-
 import {
-    TableFooter,
     Paper,
     TableContainer,
     Table,
@@ -12,94 +10,52 @@ import {
     TablePagination,
     makeStyles,
 } from '@material-ui/core';
+import { TableProps } from './TableModel';
 
-interface Column {
-    id: 'name' | 'code' | 'population' | 'size' | 'density';
-    label: string;
-    minWidth?: number;
-    align?: 'right';
-    format?: (value: number) => string;
-}
-
-interface Data {
-    name: string;
-    code: string;
-    population: number;
-    size: number;
-    density: number;
-}
 const useStyles = makeStyles({
     root: {
         width: '100%',
+        overflowX: 'auto',
     },
     container: {
-        maxHeight: 440,
+        maxHeight: 600,
+        overflowX: 'auto',
     },
 });
-function TableHandler(props): JSX.Element {
+
+function TableHandler({
+    columns,
+    data,
+    amount,
+    pageCounter,
+    setPageCounter,
+}: TableProps): JSX.Element {
     const classes = useStyles();
-    function createData(name: string, code: string, population: number, size: number): Data {
-        const density = population / size;
-        return { name, code, population, size, density };
-    }
+
     const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
+    const [rowsPerPage, setRowsPerPage] = React.useState(20);
 
     const handleChangePage = (event: unknown, newPage: number) => {
+        if (newPage > page) {
+            if (pageCounter === page) {
+                setPageCounter((prevVal) => {
+                    prevVal++;
+                    return prevVal;
+                });
+            }
+        }
         setPage(newPage);
     };
-
     const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
-    const columns: Column[] = [
-        { id: 'name', label: 'Name', minWidth: 170 },
-        { id: 'code', label: 'ISO\u00a0Code', minWidth: 100 },
-        {
-            id: 'population',
-            label: 'Population',
-            minWidth: 170,
-            align: 'right',
-            format: (value: number) => value.toLocaleString('en-US'),
-        },
-        {
-            id: 'size',
-            label: 'Size\u00a0(km\u00b2)',
-            minWidth: 170,
-            align: 'right',
-            format: (value: number) => value.toLocaleString('en-US'),
-        },
-        {
-            id: 'density',
-            label: 'Density',
-            minWidth: 170,
-            align: 'right',
-            format: (value: number) => value.toFixed(2),
-        },
-    ];
-    const rows = [
-        createData('India', 'IN', 1324171354, 3287263),
-        createData('China', 'CN', 1403500365, 9596961),
-        createData('Italy', 'IT', 60483973, 301340),
-        createData('United States', 'US', 327167434, 9833520),
-        createData('Canada', 'CA', 37602103, 9984670),
-        createData('Australia', 'AU', 25475400, 7692024),
-        createData('Germany', 'DE', 83019200, 357578),
-        createData('Ireland', 'IE', 4857000, 70273),
-        createData('Mexico', 'MX', 126577691, 1972550),
-        createData('Japan', 'JP', 126317000, 377973),
-        createData('France', 'FR', 67022000, 640679),
-        createData('United Kingdom', 'GB', 67545757, 242495),
-        createData('Russia', 'RU', 146793744, 17098246),
-        createData('Nigeria', 'NG', 200962417, 923768),
-        createData('Brazil', 'BR', 210147125, 8515767),
-    ];
+
     return (
         <Paper elevation={5} className={classes.root}>
             <TableContainer className={classes.container}>
-                <Table stickyHeader aria-label='sticky table'>
-                    <TableHead>
+                <Table className={classes.root} stickyHeader>
+                    <TableHead className={classes.root}>
                         <TableRow>
                             {columns.map((column) => (
                                 <TableCell
@@ -111,14 +67,14 @@ function TableHandler(props): JSX.Element {
                             ))}
                         </TableRow>
                     </TableHead>
-                    <TableBody>
-                        {rows
+                    <TableBody className={classes.root}>
+                        {data
                             .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((row) => {
+                            .map((item) => {
                                 return (
-                                    <TableRow hover role='checkbox' tabIndex={-1} key={row.code}>
+                                    <TableRow hover role='checkbox' tabIndex={-1} key={item.id}>
                                         {columns.map((column) => {
-                                            const value = row[column.id];
+                                            const value = item[column.id];
                                             return (
                                                 <TableCell key={column.id} align={column.align}>
                                                     {column.format && typeof value === 'number'
@@ -134,9 +90,9 @@ function TableHandler(props): JSX.Element {
                 </Table>
             </TableContainer>
             <TablePagination
-                rowsPerPageOptions={[10, 25, 100]}
+                rowsPerPageOptions={[20, 50, 100]}
                 component='div'
-                count={rows.length}
+                count={amount}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onChangePage={handleChangePage}

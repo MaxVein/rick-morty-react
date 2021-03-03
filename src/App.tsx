@@ -22,7 +22,7 @@ import {
     fade,
     CssBaseline,
 } from '@material-ui/core';
-import { Menu, Search, Mail, Inbox, ChevronLeft, ChevronRight, People } from '@material-ui/icons';
+import { Menu, Search, ChevronLeft, ChevronRight } from '@material-ui/icons';
 import clsx from 'clsx';
 
 import Characters from './features/Characters';
@@ -37,6 +37,8 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
             display: 'flex',
+            width: '100%',
+            minHeight: '100%',
         },
         appBar: {
             zIndex: theme.zIndex.drawer + 1,
@@ -135,6 +137,12 @@ const useStyles = makeStyles((theme: Theme) =>
         content: {
             textAlign: 'left',
             flexGrow: 1,
+            padding: theme.spacing(3),
+        },
+        main: {
+            width: '80%',
+            flexGrow: 1,
+            flexShrink: 2,
             padding: theme.spacing(3),
         },
         logoPlace: {
@@ -251,7 +259,7 @@ function App(): JSX.Element {
                     ))}
                 </List>
             </Drawer>
-            <main className={classes.content}>
+            <main className={classes.main}>
                 <div className={classes.toolbar} />
                 <Switch>
                     <Route path='/' component={Characters} exact />

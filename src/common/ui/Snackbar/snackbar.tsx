@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Snackbar(props): JSX.Element {
+function Snackbar(): JSX.Element {
     return <div></div>;
 }
 
